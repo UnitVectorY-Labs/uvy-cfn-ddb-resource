@@ -17,9 +17,16 @@ public class DDBResourceHandler extends CustomResourceHandler {
 	public CustomResourceResponseCreate processCreate(String resourceType, String logicalResourceId, String stackId,
 			CustomResourceRequestProperties customResourceRequestProperties) {
 
-		// TODO Implement
+		String uvyAction = customResourceRequestProperties.getStringProperty(".uvy.action");
+		UvyDDBAction action = UvyDDBAction.parse(uvyAction);
 
-		return CustomResourceResponseCreate.Builder.createSuccess(logicalResourceId).build();
+		if (action != null) {
+			return action.getResourceHandler().processCreate(resourceType, logicalResourceId, stackId,
+					customResourceRequestProperties);
+		}
+
+		return CustomResourceResponseCreate.Builder.createError(logicalResourceId, "Unknown .uvy.action: " + uvyAction)
+				.build();
 	}
 
 	@Override
@@ -27,17 +34,30 @@ public class DDBResourceHandler extends CustomResourceHandler {
 			String logicalResourceId, String stackId, CustomResourceRequestProperties customResourceRequestProperties,
 			CustomResourceRequestProperties customResourceRequestOldProperties) {
 
-		// TODO Implement
+		String uvyAction = customResourceRequestProperties.getStringProperty(".uvy.action");
+		UvyDDBAction action = UvyDDBAction.parse(uvyAction);
 
-		return CustomResourceResponseUpdate.Builder.createSuccess().build();
+		if (action != null) {
+			return action.getResourceHandler().processUpdate(physicalResourceId, resourceType, logicalResourceId,
+					stackId, customResourceRequestProperties, customResourceRequestOldProperties);
+		}
+
+		return CustomResourceResponseUpdate.Builder.createError("Unknown .uvy.action: " + uvyAction).build();
+
 	}
 
 	@Override
 	public CustomResourceResponseDelete processDelete(String physicalResourceId, String resourceType,
 			String logicalResourceId, String stackId, CustomResourceRequestProperties customResourceRequestProperties) {
 
-		// TODO Implement
+		String uvyAction = customResourceRequestProperties.getStringProperty(".uvy.action");
+		UvyDDBAction action = UvyDDBAction.parse(uvyAction);
 
-		return CustomResourceResponseDelete.Builder.createSuccess().build();
+		if (action != null) {
+			return action.getResourceHandler().processDelete(physicalResourceId, resourceType, logicalResourceId,
+					stackId, customResourceRequestProperties);
+		}
+
+		return CustomResourceResponseDelete.Builder.createError("Unknown .uvy.action: " + uvyAction).build();
 	}
 }
